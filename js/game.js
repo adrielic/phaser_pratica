@@ -10,6 +10,8 @@ class game extends Phaser.Scene {
         this.score;
         this.scoreText;
         this.gameOver = false;
+        this.soundtrack;
+        this.collectSound;
     }
 
     preload() {
@@ -21,6 +23,8 @@ class game extends Phaser.Scene {
             'assets/dude.png',
             { frameWidth: 32, frameHeight: 48 }
         );
+        this.load.audio('soundtrack', 'assets/megalovania.mp3');
+        this.load.audio('collect', 'assets/coin.mp3');
     }
 
     create() {
@@ -83,8 +87,11 @@ class game extends Phaser.Scene {
         this.bombs = this.physics.add.group();
 
         this.physics.add.collider(this.bombs, this.platforms);
-
         this.physics.add.collider(this.player, this.bombs, this.hitBomb, null, this);
+
+        this.soundtrack = this.sound.add('soundtrack');
+        this.soundtrack.play();
+        this.collectSound = this.sound.add('collect');
     }
 
     update() {
@@ -129,6 +136,8 @@ class game extends Phaser.Scene {
             bomb.setCollideWorldBounds(true);
             bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
         }
+
+        this.collectSound.play();
     }
 
     hitBomb(player, bomb) {
@@ -138,6 +147,7 @@ class game extends Phaser.Scene {
         player.anims.play('turn');
 
         this.gameOver = true;
+        this.soundtrack.pause();
 
         this.scene.start("gameOver");
     }
